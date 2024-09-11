@@ -22,14 +22,20 @@ def get_all_images(directory):
                 image_paths.append(os.path.join(root, file))
     return image_paths
 
-def compress_image(image_path, dest_folder, max_size_kb=200):
-    """ 將圖片壓縮到指定大小 """
+from PIL import Image
+import os
+
+def compress_image(image_path, dest_folder, max_size_kb=200, target_size=(500, 500)):
+    """ 將圖片縮放到指定大小並壓縮到目標大小 """
     img = Image.open(image_path)
     
     # 轉換成JPEG格式，若圖片為PNG等非JPEG格式
     output_image_path = os.path.join(dest_folder, os.path.basename(image_path))
     img = img.convert("RGB")  # 若圖片有透明度（如PNG），轉換為RGB
 
+    # 先按比例縮放到 target_size 大小
+    img.thumbnail(target_size, Image.ANTIALIAS)
+    
     # 嘗試逐步降低JPEG品質以壓縮大小
     quality = 85
     while True:
@@ -63,7 +69,7 @@ def main():
     dest_folder = './images'
     output_file = './images.csv'
     num_images = args.num_images
-    max_size_kb = 200  # 設定圖片壓縮的目標大小，200KB
+    max_size_kb = 100  # 設定圖片壓縮的目標大小，200KB
 
     # 確保目的資料夾存在
     if not os.path.exists(dest_folder):
