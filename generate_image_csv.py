@@ -25,7 +25,7 @@ def get_all_images(directory):
 from PIL import Image
 import os
 
-def compress_image(image_path, dest_folder, max_size_kb=200, target_size=(500, 500)):
+def compress_image(image_path, dest_folder, max_size_kb, target_size=(600, 600)):
     """ 將圖片縮放到指定大小並壓縮到目標大小 """
     img = Image.open(image_path)
     
@@ -37,16 +37,16 @@ def compress_image(image_path, dest_folder, max_size_kb=200, target_size=(500, 5
     img.thumbnail(target_size, Image.ANTIALIAS)
     
     # 嘗試逐步降低JPEG品質以壓縮大小
-    quality = 85
+    quality = 90
     while True:
         img.save(output_image_path, "JPEG", quality=quality)
-        if os.path.getsize(output_image_path) <= max_size_kb * 1024 or quality <= 20:
+        if os.path.getsize(output_image_path) <= max_size_kb * 1024 or quality <= 50:
             break
         quality -= 5  # 每次降低品質5
 
     return output_image_path
 
-def copy_and_compress_random_images(src_folder, dest_folder, num_images, max_size_kb=200):
+def copy_and_compress_random_images(src_folder, dest_folder, num_images, max_size_kb):
     """ 隨機挑選圖片、壓縮並複製到目的資料夾 """
     all_images = get_all_images(src_folder)
     selected_images = random.sample(all_images, min(num_images, len(all_images)))
@@ -69,7 +69,7 @@ def main():
     dest_folder = './images'
     output_file = './images.csv'
     num_images = args.num_images
-    max_size_kb = 100  # 設定圖片壓縮的目標大小，200KB
+    max_size_kb = 200  # 設定圖片壓縮的目標大小，200KB
 
     # 確保目的資料夾存在
     if not os.path.exists(dest_folder):
