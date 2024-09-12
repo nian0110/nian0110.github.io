@@ -19,7 +19,7 @@ def compress_image(image_path, dest_folder, max_size_kb, target_quality=90):
         if file_size_kb <= max_size_kb or quality <= 10:
             break
 
-        quality -= 5  # 每次降低品質5
+        quality -= 10  # 每次降低品質5
 
     return output_image_path
 
