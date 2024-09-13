@@ -18,7 +18,7 @@ fetch('images.csv')
 
         // 初始隨機選取 randomPhoto 張圖片
         selectedImages = shuffleArray(imageUrls).slice(0, randomPhoto);
-        count.innerHTML = "共 " + totalImagesCount + " 張圖片，已隨機選取 " + randomPhoto + " 張圖片，剩餘 " + selectedImages.length + " 張圖片"; // 更新圖片數量
+        count.innerHTML = "共 " + totalImagesCount + " 張圖片，已隨機選取 " + randomPhoto + " 張圖片。<br>請點選「隨機顯示圖片」查看！"; // 更新圖片數量
     })
     .catch(error => {
         console.error('Error fetching the CSV file:', error);
@@ -37,8 +37,8 @@ button.addEventListener("click", function () {
         selectedImages.splice(randomIndex, 1); // 從 selectedImages 中移除顯示過的圖片
         count.innerHTML = "共 " + randomPhoto + " 張圖片，剩餘 " + selectedImages.length + " 張圖片"; // 更新剩餘圖片數量
     } else {
-        alert("所有圖片都已顯示完畢！請按下重新整理按鈕來重新開始。");
-        count.innerHTML = "共 " + randomPhoto + " 張圖片，所有圖片都已顯示完畢！"; // 更新剩餘圖片數量
+        alert("所有圖片都已顯示完畢！請按下「重新整理」按鈕來重新開始。");
+        count.innerHTML = "共 " + randomPhoto + " 張圖片，所有圖片都已顯示完畢！<br>請按下「重新整理」按鈕來重新開始。";
     }
 });
 

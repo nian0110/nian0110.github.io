@@ -43,7 +43,7 @@
 }
 
 #button {
-	background-color: darkslateblue;
+	background-color: rgb(88, 57, 164);
 	color: white;
 }
 
@@ -71,6 +71,7 @@
 	font-family: Tahoma, sans-serif;
 	font-size: 18px;
 	margin: 10px;
+    text-align: center; /* 置中對齊文字 */
 }
 
 #image {
