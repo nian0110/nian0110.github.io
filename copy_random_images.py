@@ -50,7 +50,7 @@ def main():
     
     # 從環境變數中讀取資料夾路徑
     src_folder = os.getenv('SRC_FOLDER')
-    dest_folder = os.getenv('DEST_FOLDER')
+    dest_folder = os.getenv('COPY_DEST_FOLDER')
     num_images = args.num_images
 
     # 確保目的資料夾存在
