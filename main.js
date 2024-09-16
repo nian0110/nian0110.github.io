@@ -3,6 +3,7 @@ let refreshButton = document.getElementById("refresh-button");
 let prevButton = document.getElementById("previous-button");
 let nextButton = document.getElementById("next-button");
 let image = document.getElementById("image");
+let info = document.getElementById("info");
 let imageUrls = [];
 let totalImagesCount = 0; // 總圖片數量
 let selectedImages = []; // 隨機選中的圖片
@@ -14,8 +15,18 @@ let currentIndex = -1; // 當前顯示的圖片索引
 fetch('images.csv')
     .then(response => response.text())
     .then(data => {
-        // 將 CSV 的每一行分割並存入 imageUrls 陣列
-        imageUrls = data.split('\n').filter(url => url.trim() !== ""); // 過濾掉空白行
+        // 將 CSV 的每一行分割並處理
+        let lines = data.split('\n').filter(line => line.trim() !== ""); // 過濾掉空白行
+        imageUrls = lines.slice(1).map(line => {
+            let columns = line.split(',');
+            return {
+                filename: columns[0].trim(),
+                full_path: columns[1].trim(),
+                // username: columns[2].trim(),
+                // root_path: columns[3].trim(),
+                // children_path: columns[4].trim()
+            };
+        });
         totalImagesCount = imageUrls.length; // 記錄總圖片數量
 
         // 初始隨機選取 randomPhoto 張圖片
@@ -43,6 +54,7 @@ refreshButton.addEventListener("click", function () {
         currentIndex = -1; // 重置當前索引
         image.src = ""; // 清除顯示的圖片
         image.style.display = "none"; // 隱藏圖片
+        info.innerHTML = ""; // 清除顯示的附加信息
         count.innerHTML = '已重新隨機選取 ' + randomPhoto + ' 張圖片，請點選「隨機顯示圖片」查看！'; // 更新訊息
 
         // 隱藏其他按鈕
@@ -84,8 +96,10 @@ function shuffleArray(array) {
 
 // 顯示圖片並更新訊息
 function showImage(index) {
-    image.src = selectedImages[index];
+    let imageData = selectedImages[index];
+    image.src = imageData.full_path;
     image.style.display = "block";
+    // info.innerHTML = `username：${imageData.username}<br>類別：${imageData.root_path}<br>活動名稱：${imageData.children_path}`;
     count.innerHTML = "第 " + (index + 1) + " 張圖片，共 " + selectedImages.length + " 張";
 
     // 顯示其他按鈕
