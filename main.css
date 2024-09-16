@@ -6,15 +6,15 @@
 
 @media (max-width: 400px) {
 
-	#button, #refresh-button {
+	#button, #refresh-button, #previous-button {
 		margin: 10px 5px !important;
 	}
 
 	.inner-div {
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+		/* flex-direction: column; */
+		/* align-items: center;
+		justify-content: center; */
 	}
 
 	#image {
@@ -30,7 +30,7 @@
 	margin-bottom: 40px; /* 设置底部外边距 */
 }
 
-#button, #refresh-button {
+#button, #refresh-button, #previous-button {
 	margin: 20px 10px;
 	border-color: white;
 	font-family: Tahoma, sans-serif;
