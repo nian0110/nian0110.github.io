@@ -1,12 +1,14 @@
 let button = document.getElementById("button");
 let refreshButton = document.getElementById("refresh-button");
+let prevButton = document.getElementById("previous-button");
+let nextButton = document.getElementById("next-button");
 let image = document.getElementById("image");
 let imageUrls = [];
-let removedUrls = [];
 let totalImagesCount = 0; // 總圖片數量
 let selectedImages = []; // 隨機選中的圖片
 let count = document.getElementById("count");
 let randomPhoto = 10;
+let currentIndex = -1; // 當前顯示的圖片索引
 
 // 使用 fetch 來讀取 CSV 檔案
 fetch('images.csv')
@@ -25,17 +27,9 @@ fetch('images.csv')
     });
 
 button.addEventListener("click", function () {
-    if (selectedImages.length > 0) {
-        // 隨機選擇一張圖片
-        let randomIndex = Math.floor(Math.random() * selectedImages.length);
-        let selectedImageUrl = selectedImages[randomIndex];
-
-        image.src = selectedImageUrl;
-        image.style.display = "block";
-
-        removedUrls.push(selectedImageUrl); // 將顯示過的圖片移至 removedUrls
-        selectedImages.splice(randomIndex, 1); // 從 selectedImages 中移除顯示過的圖片
-        count.innerHTML = "共 " + randomPhoto + " 張圖片，剩餘 " + selectedImages.length + " 張圖片"; // 更新剩餘圖片數量
+    if (currentIndex < selectedImages.length - 1) {
+        currentIndex++;
+        showImage(currentIndex);
     } else {
         alert("所有圖片都已顯示完畢！請按下「重新整理」按鈕來重新開始。");
         count.innerHTML = "共 " + randomPhoto + " 張圖片，所有圖片都已顯示完畢！<br>請按下「重新整理」按鈕來重新開始。";
@@ -46,13 +40,36 @@ refreshButton.addEventListener("click", function () {
     // 當按下 refresh 按鈕時，重新隨機選取 randomPhoto 張圖片
     if (imageUrls.length >= randomPhoto) {
         selectedImages = shuffleArray(imageUrls).slice(0, randomPhoto); // 隨機選取 randomPhoto 張圖片
-        removedUrls = []; // 清空已顯示的圖片列表
+        currentIndex = -1; // 重置當前索引
         image.src = ""; // 清除顯示的圖片
         image.style.display = "none"; // 隱藏圖片
-        // 更新為「已隨機選取圖片」的訊息
         count.innerHTML = '已重新隨機選取 ' + randomPhoto + ' 張圖片，請點選「隨機顯示圖片」查看！'; // 更新訊息
+
+        // 隱藏其他按鈕
+        refreshButton.style.display = "none";
+        prevButton.style.display = "none";
+        button.textContent = "隨機顯示圖片";
     } else {
         alert("圖片數量不足以隨機選取" + randomPhoto + "張。");
+    }
+});
+
+prevButton.addEventListener("click", function () {
+    if (currentIndex > 0) {
+        currentIndex--;
+        showImage(currentIndex);
+    } else {
+        alert("已經是第一張圖片！");
+    }
+});
+
+nextButton.addEventListener("click", function () {
+    if (currentIndex < selectedImages.length - 1) {
+        currentIndex++;
+        showImage(currentIndex);
+    } else {
+        alert("所有圖片都已顯示完畢！請按下「重新整理」按鈕來重新開始。");
+        count.innerHTML = "共 " + randomPhoto + " 張圖片，所有圖片都已顯示完畢！<br>請按下「重新整理」按鈕來重新開始。";
     }
 });
 
@@ -63,4 +80,16 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+// 顯示圖片並更新訊息
+function showImage(index) {
+    image.src = selectedImages[index];
+    image.style.display = "block";
+    count.innerHTML = "第 " + (index + 1) + " 張圖片，共 " + selectedImages.length + " 張";
+
+    // 顯示其他按鈕
+    refreshButton.style.display = "inline";
+    prevButton.style.display = "inline";
+    button.textContent = "下一張";
 }

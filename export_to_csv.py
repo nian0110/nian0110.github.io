@@ -14,6 +14,7 @@ if __name__ == "__main__":
     
     # 將檔案名稱寫入 CSV
     df = pd.DataFrame(all_files, columns=['filename'])
+    df['filename'] = df['filename'].apply(lambda x: x.replace('\\', '/'))
     df.to_csv(output_file, index=False, header=False)
     
     print(f"已將 {len(all_files)} 個檔案匯出到 {output_file}")
