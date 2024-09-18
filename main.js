@@ -11,30 +11,28 @@ let count = document.getElementById("count");
 let randomPhoto = 10;
 let currentIndex = -1; // 當前顯示的圖片索引
 
-// 使用 fetch 來讀取 CSV 檔案
-fetch('images.csv')
-    .then(response => response.text())
+fetch('http://127.0.0.1:5000/images', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ limit: randomPhoto })
+})
+    .then(response => response.json())
     .then(data => {
-        // 將 CSV 的每一行分割並處理
-        let lines = data.split('\n').filter(line => line.trim() !== ""); // 過濾掉空白行
-        imageUrls = lines.slice(1).map(line => {
-            let columns = line.split(',');
-            return {
-                filename: columns[0].trim(),
-                full_path: columns[1].trim(),
-                // username: columns[2].trim(),
-                // root_path: columns[3].trim(),
-                // children_path: columns[4].trim()
-            };
-        });
-        totalImagesCount = imageUrls.length; // 記錄總圖片數量
+        // 使用從 API 獲取的 JSON 資料
+        imageUrls = data.Images.map(item => ({
+            filename: item.filename.trim(),
+            full_path: item.full_path.trim()
+        }));
+        totalImagesCount = data.totalImagesCount; // 記錄總圖片數量
 
         // 初始隨機選取 randomPhoto 張圖片
         selectedImages = shuffleArray(imageUrls).slice(0, randomPhoto);
         count.innerHTML = "共 " + totalImagesCount + " 張圖片，已隨機選取 " + randomPhoto + " 張圖片。<br>請點選「隨機顯示圖片」查看！"; // 更新圖片數量
     })
     .catch(error => {
-        console.error('Error fetching the CSV file:', error);
+        console.error('Error fetching the JSON data:', error);
     });
 
 button.addEventListener("click", function () {

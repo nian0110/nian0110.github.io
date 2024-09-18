@@ -23,7 +23,9 @@ def get_all_files(directory):
 
 def merge_notion_df(df):
     notion_df = pd.read_excel('photo_data_notion.xlsx')
-    notion_df = notion_df[['filename', 'username', 'root_path', 'children_path']]
+    notion_df = notion_df.rename(columns={'children_path':'activity', 'month_path':'month'})
+    notion_df['lingorm'] = notion_df['relative_path'].apply(lambda x: x.split('/')[-1])
+    notion_df = notion_df[['filename', 'username', 'root_path', 'activity', 'month', 'lingorm']]
 
     df['filename'] = df['filename'].apply(lambda x: os.path.splitext(x)[0])
     df = df.rename(columns={'filename':'base_filename'})
@@ -34,7 +36,8 @@ def merge_notion_df(df):
 
     # 删除临时列
     merged_df = merged_df.drop(columns=['base_filename'])
-    merged_df = merged_df[['filename', 'full_path', 'username', 'root_path', 'children_path']]
+    merged_df['filename'] = merged_df['full_path'].apply(lambda x:x.split('/')[-1])
+    merged_df = merged_df[['filename', 'full_path', 'username', 'root_path', 'activity', 'month', 'lingorm']]
 
     return merged_df
 
