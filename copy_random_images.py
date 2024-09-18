@@ -15,9 +15,8 @@ def clear_directory(directory):
         if os.path.isfile(file_path):
             os.remove(file_path)
 
-def get_all_images(directory):
+def get_all_images(directory, image_extensions):
     """ 獲取指定資料夾中所有圖片的完整路徑 """
-    image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp'}
     image_paths = []
     for root, _, files in os.walk(directory):
         for file in files:
@@ -27,7 +26,8 @@ def get_all_images(directory):
 
 def copy_images(src_folder, dest_folder, num_images):
     """ 複製指定數量的圖片到目的資料夾，若 num_images 為 'all' 則複製所有圖片 """
-    all_images = get_all_images(src_folder)
+    image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp'}
+    all_images = get_all_images(src_folder, image_extensions)
     
     if num_images == 'all':
         selected_images = all_images
