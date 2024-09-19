@@ -8,16 +8,20 @@ let imageUrls = [];
 let totalImagesCount = 0; // 總圖片數量
 let selectedImages = []; // 隨機選中的圖片
 let count = document.getElementById("count");
-let randomPhoto = 10;
+let randomPhoto = 3;
 let currentIndex = -1; // 當前顯示的圖片索引
+let isFirstLoad = true; // 判斷是否為第一次進入網頁
 
-fetch('http://127.0.0.1:5000/images', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ limit: randomPhoto })
-})
+
+// 定義 fetch API 請求的函數
+function fetchImages() {
+    fetch('https://backend-ogmr.onrender.com/images', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ limit: randomPhoto })
+    })
     .then(response => response.json())
     .then(data => {
         // 使用從 API 獲取的 JSON 資料
@@ -29,11 +33,20 @@ fetch('http://127.0.0.1:5000/images', {
 
         // 初始隨機選取 randomPhoto 張圖片
         selectedImages = shuffleArray(imageUrls).slice(0, randomPhoto);
-        count.innerHTML = "共 " + totalImagesCount + " 張圖片，已隨機選取 " + randomPhoto + " 張圖片。<br>請點選「隨機顯示圖片」查看！"; // 更新圖片數量
+
+        // 第一次進入頁面顯示特定訊息
+        if (isFirstLoad) {
+            count.innerHTML = "共 " + totalImagesCount + " 張圖片，已隨機選取 " + randomPhoto + " 張圖片。<br>請點選「隨機顯示圖片」查看！";
+            isFirstLoad = false; // 將旗標設為 false，表示已經不是第一次進入頁面
+        }
     })
     .catch(error => {
         console.error('Error fetching the JSON data:', error);
     });
+}
+
+// 第一次載入頁面時，呼叫 fetchImages 來獲取圖片
+fetchImages();
 
 button.addEventListener("click", function () {
     if (currentIndex < selectedImages.length - 1) {
@@ -45,8 +58,10 @@ button.addEventListener("click", function () {
     }
 });
 
+// 點擊重新整理按鈕時重新呼叫 API 並隨機選取圖片
 refreshButton.addEventListener("click", function () {
-    // 當按下 refresh 按鈕時，重新隨機選取 randomPhoto 張圖片
+    fetchImages(); // 再次呼叫 API 以獲取新的圖片資料
+
     if (imageUrls.length >= randomPhoto) {
         selectedImages = shuffleArray(imageUrls).slice(0, randomPhoto); // 隨機選取 randomPhoto 張圖片
         currentIndex = -1; // 重置當前索引
@@ -60,7 +75,7 @@ refreshButton.addEventListener("click", function () {
         prevButton.style.display = "none";
         button.textContent = "隨機顯示圖片";
     } else {
-        alert("圖片數量不足以隨機選取" + randomPhoto + "張。");
+        alert("圖片數量不足以隨機選取 " + randomPhoto + " 張。");
     }
 });
 
