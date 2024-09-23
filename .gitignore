@@ -1,5 +1,5 @@
 .env
-/images_org/*
+/image_org/*
 photo_data_notion.xlsx
 .DS_Store
 test.ipynb
