@@ -19,31 +19,31 @@ def compress_image(image_path, dest_folder, max_size_kb, target_quality=90):
     # 如果已經有符合條件的 WebP 文件，則跳過
     if os.path.exists(webp_image_path):
         file_size_kb = os.path.getsize(webp_image_path) / 1024
-        if file_size_kb <= max_size_kb:
-            print(f"檔案 {webp_image_path} 已經存在且大小小於 {max_size_kb} KB，跳過")
-            return webp_image_path
+        # if file_size_kb <= max_size_kb:
+        print(f"檔案 {webp_image_path} 已經存在，檔案大小 {file_size_kb} KB，跳過")
+        
+    else:
+        print(f"開始壓縮檔案: {image_path}")
+        file_size_init = os.path.getsize(image_path) / 1024
 
-    print(f"開始壓縮檔案: {image_path}")
-    file_size_init = os.path.getsize(image_path) / 1024
+        img = Image.open(image_path)
+        img = img.convert("RGB")  # 若圖片有透明度（如PNG），轉換為RGB
 
-    img = Image.open(image_path)
-    img = img.convert("RGB")  # 若圖片有透明度（如PNG），轉換為RGB
+        quality = target_quality
+        while True:
+            img.save(webp_image_path, "WEBP", quality=quality, optimize=True)
+            file_size_kb = os.path.getsize(webp_image_path) / 1024
+            with print_lock:
+                print(f"檔案原始大小：{file_size_init:.2f} KB, 壓縮後大小: {file_size_kb:.2f} KB, 品質: {quality}")
 
-    quality = target_quality
-    while True:
-        img.save(webp_image_path, "WEBP", quality=quality, optimize=True)
-        file_size_kb = os.path.getsize(webp_image_path) / 1024
+            if file_size_kb <= max_size_kb or quality <= 10:
+                break
+
+            quality -= 10  # 每次降低品質10
+
         with print_lock:
-            print(f"檔案原始大小：{file_size_init:.2f} KB, 壓縮後大小: {file_size_kb:.2f} KB, 品質: {quality}")
-
-        if file_size_kb <= max_size_kb or quality <= 10:
-            break
-
-        quality -= 10  # 每次降低品質10
-
-    with print_lock:
-        print(f"完成壓縮: {webp_image_path}\n")
-    
+            print(f"完成壓縮: {webp_image_path}\n")
+        
     return webp_image_path
 
 def get_all_images(directory):

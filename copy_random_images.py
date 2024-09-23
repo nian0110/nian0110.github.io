@@ -4,6 +4,7 @@ import shutil
 import argparse
 from tqdm import tqdm
 from dotenv import load_dotenv
+import pandas as pd
 
 # 加載 .env 文件
 load_dotenv()
@@ -24,24 +25,39 @@ def get_all_images(directory, image_extensions):
                 image_paths.append(os.path.join(root, file))
     return image_paths
 
-def copy_images(src_folder, dest_folder, num_images):
+def copy_images(src_folder, dest_org_folder, num_images):
     """ 複製指定數量的圖片到目的資料夾，若 num_images 為 'all' 則複製所有圖片 """
     image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp'}
     all_images = get_all_images(src_folder, image_extensions)
+    copy_file_bool = check_jpg(all_images)
     
     if num_images == 'all':
         selected_images = all_images
     else:
         num_images = int(num_images)
         selected_images = random.sample(all_images, min(num_images, len(all_images)))
-    
-    clear_directory(dest_folder)
-    
-    # 使用 tqdm 進度條顯示複製進度
-    for image_path in tqdm(selected_images, desc="複製圖片", unit="張"):
-        shutil.copy(image_path, dest_folder)
-    
-    return [os.path.basename(img) for img in selected_images]
+
+    if copy_file_bool:
+        clear_directory(dest_org_folder)
+        
+        # 使用 tqdm 進度條顯示複製進度
+        for image_path in tqdm(selected_images, desc="複製圖片", unit="張"):
+            shutil.copy(image_path, dest_org_folder)
+
+        copied_files = [os.path.basename(img) for img in selected_images]
+
+        return copied_files
+    else:
+        return []
+
+def check_jpg(file_list):
+    df = pd.DataFrame(file_list, columns=['filename'])
+    df['extension'] = df['filename'].apply(lambda x:x.split('.')[-1])
+    print(f"\n{df['extension'].value_counts()}\n")
+    if df[df['extension']=='jpg'].shape[0] == df.shape[0]:
+        return True
+    else:
+        return False
 
 def clean_unwanted_webp_files(dest_org_folder, dest_folder):
     """ 檢查 dest_folder 中的 WebP 檔案，如果它們不存在於 dest_org_folder，則刪除 """
@@ -59,7 +75,7 @@ def clean_unwanted_webp_files(dest_org_folder, dest_folder):
         deleted_count += 1
         # print(f"刪除檔案: {file}")
 
-    print(f"\n從{dest_folder}，總共刪除了 {deleted_count} 個檔案")
+    print(f"從{dest_folder}，總共刪除了 {deleted_count} 個檔案")
 
 def main():
     parser = argparse.ArgumentParser(description='隨機挑選圖片並複製到指定資料夾')
@@ -85,10 +101,12 @@ def main():
     
     # 複製圖片
     copied_files = copy_images(src_folder, dest_org_folder, num_images)
-    print(f"已複製 {len(copied_files)} 張圖片，存入 {dest_org_folder}\n")
-
-    # 檢查並刪除不需要的 WebP 檔案
-    clean_unwanted_webp_files(dest_org_folder, dest_folder)
+    if len(copied_files) !=0:
+        print(f"已複製 {len(copied_files)} 張圖片，存入 {dest_org_folder}\n")
+        # 檢查並刪除不需要的 WebP 檔案
+        clean_unwanted_webp_files(dest_org_folder, dest_folder)
+    else:
+        print(f'檔案類型不一致，請確認！')
 
 if __name__ == "__main__":
     main()
