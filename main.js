@@ -8,45 +8,34 @@ let imageUrls = [];
 let totalImagesCount = 0; // 總圖片數量
 let selectedImages = []; // 隨機選中的圖片
 let count = document.getElementById("count");
-let randomPhoto = 3;
+let randomPhoto = 10;
 let currentIndex = -1; // 當前顯示的圖片索引
-let isFirstLoad = true; // 判斷是否為第一次進入網頁
 
-
-// 定義 fetch API 請求的函數
-function fetchImages() {
-    fetch('https://backend-ogmr.onrender.com/images', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ limit: randomPhoto })
-    })
-    .then(response => response.json())
+// 使用 fetch 來讀取 CSV 檔案
+fetch('./data/images.csv')
+    .then(response => response.text())
     .then(data => {
-        // 使用從 API 獲取的 JSON 資料
-        imageUrls = data.Images.map(item => ({
-            filename: item.filename.trim(),
-            full_path: item.full_path.trim()
-        }));
-        totalImagesCount = data.totalImagesCount; // 記錄總圖片數量
+        // 將 CSV 的每一行分割並處理
+        let lines = data.split('\n').filter(line => line.trim() !== ""); // 過濾掉空白行
+        imageUrls = lines.slice(1).map(line => {
+            let columns = line.split(',');
+            return {
+                filename: columns[0].trim(),
+                full_path: columns[1].trim(),
+                // username: columns[2].trim(),
+                // root_path: columns[3].trim(),
+                // children_path: columns[4].trim()
+            };
+        });
+        totalImagesCount = imageUrls.length; // 記錄總圖片數量
 
         // 初始隨機選取 randomPhoto 張圖片
         selectedImages = shuffleArray(imageUrls).slice(0, randomPhoto);
-
-        // 第一次進入頁面顯示特定訊息
-        if (isFirstLoad) {
-            count.innerHTML = "共 " + totalImagesCount + " 張圖片，已隨機選取 " + randomPhoto + " 張圖片。<br>請點選「隨機顯示圖片」查看！";
-            isFirstLoad = false; // 將旗標設為 false，表示已經不是第一次進入頁面
-        }
+        count.innerHTML = "共 " + totalImagesCount + " 張圖片，已隨機選取 " + randomPhoto + " 張圖片。<br>請點選「隨機顯示圖片」查看！"; // 更新圖片數量
     })
     .catch(error => {
-        console.error('Error fetching the JSON data:', error);
+        console.error('Error fetching the CSV file:', error);
     });
-}
-
-// 第一次載入頁面時，呼叫 fetchImages 來獲取圖片
-fetchImages();
 
 button.addEventListener("click", function () {
     if (currentIndex < selectedImages.length - 1) {
@@ -58,10 +47,8 @@ button.addEventListener("click", function () {
     }
 });
 
-// 點擊重新整理按鈕時重新呼叫 API 並隨機選取圖片
 refreshButton.addEventListener("click", function () {
-    fetchImages(); // 再次呼叫 API 以獲取新的圖片資料
-
+    // 當按下 refresh 按鈕時，重新隨機選取 randomPhoto 張圖片
     if (imageUrls.length >= randomPhoto) {
         selectedImages = shuffleArray(imageUrls).slice(0, randomPhoto); // 隨機選取 randomPhoto 張圖片
         currentIndex = -1; // 重置當前索引
@@ -75,7 +62,7 @@ refreshButton.addEventListener("click", function () {
         prevButton.style.display = "none";
         button.textContent = "隨機顯示圖片";
     } else {
-        alert("圖片數量不足以隨機選取 " + randomPhoto + " 張。");
+        alert("圖片數量不足以隨機選取" + randomPhoto + "張。");
     }
 });
 
