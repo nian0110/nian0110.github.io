@@ -20,8 +20,8 @@
     <link rel="icon" href="favicon/favicon.ico">
     <style>
         :root {
-            --primary-color: #0d6efd;
-            --hover-color: #0b5ed7;
+            /* --primary-color: #0d6efd;
+            --hover-color: #0b5ed7; */
             --background-color: #f8f9fa;
             --card-shadow: 0 4px 8px rgba(0,0,0,0.1);
             --card-hover-shadow: 0 8px 16px rgba(0,0,0,0.2);
@@ -44,33 +44,40 @@
             justify-content: center;
             gap: 15px;
             align-items: center;
-            padding: 0 15px;
+            padding: 8px 16px;
             min-height: 50px;
         }
 
         .pinterest-grid {
             display: flex;
-            /* gap: 16px; */
-            padding: 16px 4px;
+            padding: 8px 4px; /* 縮小整體邊距 */
             max-width: 1200px;
             margin: 0 auto;
         }
 
         @media (max-width: 576px) {
+            .pinterest-column {
+                margin: 0 4px !important; /* 縮小列間距 */
+            }
+
+            .pinterest-item {
+                margin-bottom: 8px !important; /* 縮小項目間距 */
+            }
+
             .control-panel {
-                gap: 8px;
-                padding: 0 8px;
+                gap: 12px; /* 增加按鈕間距 */
+                padding: 8px 12px; /* 增加左右間距 */
             }
             
-            #refresh-btn {
-                font-size: 0.9em;
-                padding: 4px 12px;
+            .image-actions button {
+                width: 32px; /* 縮小按鈕尺寸 */
+                height: 32px;
             }
-            
-            #count {
-                font-size: 0.9em;
-                padding: 6px 12px;
+
+            .image-overlay {
+                padding: 12px; /* 縮小 overlay 內邊距 */
             }
+
         }
 
         @media (min-width: 768px) {
@@ -86,12 +93,12 @@
         }
 
         .pinterest-item {
+            cursor: pointer;
             margin-bottom: 16px;
             border-radius: 12px;
             overflow: hidden;
             background-color: #fff;
             box-shadow: var(--card-shadow);
-            cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             width: 100%;
@@ -162,8 +169,9 @@
         }
         
         #refresh-btn {
-            padding: 6px 15px; /* 稍微減少按鈕的內邊距 */
-            white-space: nowrap; /* 確保按鈕文字不換行 */
+            padding: 6px 8px;
+            white-space: nowrap;
+            border-radius: 10px;
         }
 
         #count {
@@ -200,7 +208,6 @@
             height: 50px;
             border-radius: 50%;
             display: none;
-            justify-content: center;
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -228,6 +235,7 @@
             padding: 20px;
         }
 
+        /* 修改 modal 內容的最大尺寸 */
         .modal-content {
             max-width: 90%;
             max-height: 90vh;
@@ -380,7 +388,7 @@
 
         async loadCSV() {
             try {
-                const response = await fetch('images.csv');
+                const response = await fetch('./data/images.csv');
                 const data = await response.text();
                 let lines = data.split('\n').filter(line => line.trim() !== "");
                 this.imageUrls = lines.slice(1).map(line => {
@@ -416,7 +424,6 @@
 
         updateCount() {
             this.countElement.innerHTML = `
-                <i class="fas fa-image me-2"></i>
                 已顯示 ${this.displayedImages.size} / ${this.imageUrls.length} 張圖片
             `;
         }
@@ -431,77 +438,63 @@
         }
 
         createImageElement(url) {
-            // const item = document.createElement('div');
-            // item.className = 'pinterest-item loading';
-            
-            // const img = document.createElement('img');
-            // img.src = url;
-            // img.alt = '隨機圖片';
-            // img.loading = 'lazy';
-            
-            // img.onload = () => {
-            //     item.classList.remove('loading');
-            // };
-
             const item = document.createElement('div');
-            item.className = 'pinterest-item loading';
-            
-            // 創建一個包裝器來維持寬高比
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.paddingBottom = '75%'; // 預設寬高比 4:3
-            
-            const img = document.createElement('img');
-            img.style.position = 'absolute';
-            img.style.top = '0';
-            img.style.left = '0';
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            
-            // 預加載圖片
-            const tempImage = new Image();
-            tempImage.onload = () => {
-                const aspectRatio = (tempImage.height / tempImage.width * 100) + '%';
-                wrapper.style.paddingBottom = aspectRatio;
-                img.src = url;
-                item.classList.remove('loading');
-            };
-            tempImage.src = url;
-            
-            wrapper.appendChild(img);
-            item.appendChild(wrapper);
+                item.className = 'pinterest-item loading';
+                
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                wrapper.style.paddingBottom = '75%';
+                
+                const img = document.createElement('img');
+                img.style.position = 'absolute';
+                img.style.top = '0';
+                img.style.left = '0';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                
+                // 新增：整個 item 可點擊放大
+                item.addEventListener('click', (e) => {
+                    // 如果點擊的不是下載按鈕，就放大圖片
+                    if (!e.target.closest('.image-actions')) {
+                        this.openModal(url);
+                    }
+                });
+                
+                const tempImage = new Image();
+                tempImage.onload = () => {
+                    const aspectRatio = (tempImage.height / tempImage.width * 100) + '%';
+                    wrapper.style.paddingBottom = aspectRatio;
+                    img.src = url;
+                    item.classList.remove('loading');
+                };
+                tempImage.src = url;
+                
+                wrapper.appendChild(img);
+                item.appendChild(wrapper);
 
-            const overlay = document.createElement('div');
-            overlay.className = 'image-overlay';
-            
-            const actions = document.createElement('div');
-            actions.className = 'image-actions';
-            
-            const viewButton = document.createElement('button');
-            viewButton.innerHTML = '<i class="fas fa-search-plus"></i>';
-            viewButton.title = '放大檢視';
-            viewButton.onclick = (e) => {
-                e.stopPropagation();
-                this.openModal(url);
-            };
+                const overlay = document.createElement('div');
+                overlay.className = 'image-overlay';
+                
+                const actions = document.createElement('div');
+                actions.className = 'image-actions';
+                
+                // 移除放大按鈕，因為整個圖片都可以點擊放大
+                const downloadButton = document.createElement('button');
+                downloadButton.innerHTML = '<i class="fas fa-download"></i>';
+                downloadButton.title = '下載圖片';
+                downloadButton.onclick = (e) => {
+                    e.stopPropagation(); // 防止觸發父元素的點擊事件
+                    this.downloadImage(url);
+                };
 
-            const downloadButton = document.createElement('button');
-            downloadButton.innerHTML = '<i class="fas fa-download"></i>';
-            downloadButton.title = '下載圖片';
-            downloadButton.onclick = (e) => {
-                e.stopPropagation();
-                this.downloadImage(url);
-            };
-
-            actions.appendChild(viewButton);
-            actions.appendChild(downloadButton);
-            overlay.appendChild(actions);
-            
-            item.appendChild(img);
-            item.appendChild(overlay);
-            
-            return item;
+                actions.appendChild(downloadButton);
+                overlay.appendChild(actions);
+                
+                item.appendChild(img);
+                item.appendChild(overlay);
+                
+                return item;
         }
 
         async loadImages() {
