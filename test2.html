@@ -185,7 +185,7 @@
     
             async loadCSV() {
                 try {
-                    const response = await fetch('images.csv');
+                    const response = await fetch('images_100.csv');
                     const data = await response.text();
                     let lines = data.split('\n').filter(line => line.trim() !== "");
                     this.imageUrls = lines.slice(1).map(line => {

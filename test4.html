@@ -49,9 +49,9 @@
         }
 
         .pinterest-grid {
-            column-count: 2;
-            column-gap: 16px;
-            padding: 16px;
+            display: flex;
+            /* gap: 16px; */
+            padding: 4px;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -86,8 +86,7 @@
         }
 
         .pinterest-item {
-            break-inside: avoid;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             border-radius: 12px;
             overflow: hidden;
             background-color: #fff;
@@ -95,6 +94,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            width: 100%;
         }
 
         .pinterest-item:hover {
@@ -111,7 +111,7 @@
         }
 
         .pinterest-item.loading img {
-            filter: blur(10px);
+            background-color: #f0f0f0;
         }
 
         .image-overlay {
@@ -348,6 +348,42 @@
             this.loadCSV().then(() => {
                 this.initialize();
             });
+            this.columns = [];
+            this.columnCount = this.getColumnCount();
+            this.initializeColumns();
+            
+            // 監聽視窗大小變化
+            window.addEventListener('resize', _.debounce(() => {
+                const newColumnCount = this.getColumnCount();
+                if (newColumnCount !== this.columnCount) {
+                    this.columnCount = newColumnCount;
+                    this.reflow();
+                }
+            }, 250));
+        }
+
+        initializeColumns() {
+            this.imageGrid.innerHTML = '';
+            this.columns = [];
+            for (let i = 0; i < this.columnCount; i++) {
+                const column = document.createElement('div');
+                column.className = 'pinterest-column';
+                column.style.cssText = `
+                    flex: 1;
+                    margin: 0 8px;
+                `;
+                this.columns.push(column);
+                this.imageGrid.appendChild(column);
+            }
+        }
+
+        reflow() {
+            const items = Array.from(this.imageGrid.querySelectorAll('.pinterest-item'));
+            this.initializeColumns();
+            items.forEach((item, index) => {
+                const columnIndex = index % this.columnCount;
+                this.columns[columnIndex].appendChild(item);
+            });
         }
 
         async loadCSV() {
@@ -369,6 +405,13 @@
                 this.showError('載入圖片清單時發生錯誤');
             }
         }
+
+        getColumnCount() {
+        const width = window.innerWidth;
+        if (width >= 1200) return 4;
+        if (width >= 768) return 3;
+        return 2;
+    }
 
         initialize() {
             this.setupRefreshButton();
@@ -396,17 +439,46 @@
         }
 
         createImageElement(url) {
+            // const item = document.createElement('div');
+            // item.className = 'pinterest-item loading';
+            
+            // const img = document.createElement('img');
+            // img.src = url;
+            // img.alt = '隨機圖片';
+            // img.loading = 'lazy';
+            
+            // img.onload = () => {
+            //     item.classList.remove('loading');
+            // };
+
             const item = document.createElement('div');
             item.className = 'pinterest-item loading';
             
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = '隨機圖片';
-            img.loading = 'lazy';
+            // 創建一個包裝器來維持寬高比
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.paddingBottom = '75%'; // 預設寬高比 4:3
             
-            img.onload = () => {
+            const img = document.createElement('img');
+            img.style.position = 'absolute';
+            img.style.top = '0';
+            img.style.left = '0';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            
+            // 預加載圖片
+            const tempImage = new Image();
+            tempImage.onload = () => {
+                const aspectRatio = (tempImage.height / tempImage.width * 100) + '%';
+                wrapper.style.paddingBottom = aspectRatio;
+                img.src = url;
                 item.classList.remove('loading');
             };
+            tempImage.src = url;
+            
+            wrapper.appendChild(img);
+            item.appendChild(wrapper);
 
             const overlay = document.createElement('div');
             overlay.className = 'image-overlay';
@@ -442,7 +514,7 @@
 
         async loadImages() {
             if (this.isLoading || !this.hasMoreImages) return;
-            
+        
             this.isLoading = true;
             this.loadingSpinner.style.display = 'block';
 
@@ -458,17 +530,12 @@
                 const url = newImages[i];
                 this.displayedImages.add(url);
                 const imageElement = this.createImageElement(url);
-                
-                // 添加延遲載入效果
-                setTimeout(() => {
-                    this.imageGrid.appendChild(imageElement);
-                    if (i === newImages.length - 1) {
-                        this.isLoading = false;
-                        this.loadingSpinner.style.display = this.hasMoreImages ? 'block' : 'none';
-                    }
-                }, i * this.loadDelay);
+                const columnIndex = this.displayedImages.size % this.columnCount;
+                this.columns[columnIndex].appendChild(imageElement);
             }
 
+            this.isLoading = false;
+            this.loadingSpinner.style.display = this.hasMoreImages ? 'block' : 'none';
             this.updateCount();
         }
 
