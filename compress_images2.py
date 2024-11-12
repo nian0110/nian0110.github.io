@@ -49,7 +49,10 @@ def compress_image(image_path, dest_folder, max_size_kb, target_quality=90):
 def get_all_images(directory):
     img_files = []
     for root, dirs, files in os.walk(directory):
-        img_files.extend(files)
+        for file in files:
+            full_path = os.path.join(root, file)
+            print(full_path)
+            img_files.append(full_path)
     return img_files
 
 def compress_all_images(img_tmp_folder, img_folder, max_size_kb):
@@ -59,7 +62,7 @@ def compress_all_images(img_tmp_folder, img_folder, max_size_kb):
 
     # 使用 ThreadPoolExecutor 並行處理圖片
     with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(compress_image, image_path, img_tmp_folder, max_size_kb) for image_path in image_paths]
+        futures = [executor.submit(compress_image, image_path, img_folder, max_size_kb) for image_path in image_paths]
         for future in tqdm(futures, desc="壓縮圖片中"):
             compressed_images.append(future.result())
 
@@ -86,7 +89,7 @@ def main():
     # 壓縮圖片
     compressed_files = compress_all_images(img_tmp_folder, img_folder, max_size_kb)
 
-    print(f"已壓縮 {len(compressed_files)} 張圖片，結果存儲於 {dest_folder}")
+    print(f"已壓縮 {len(compressed_files)} 張圖片，結果存儲於 {img_folder}")
 
 if __name__ == "__main__":
     main()
