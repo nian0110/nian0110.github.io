@@ -51,7 +51,7 @@
         .pinterest-grid {
             display: flex;
             /* gap: 16px; */
-            padding: 4px;
+            padding: 16px 4px;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -328,39 +328,31 @@
     <script>
     class ImageGallery {
         constructor() {
-            this.imageGrid = document.querySelector('.pinterest-grid');
-            this.loadingSpinner = document.querySelector('.loading-spinner');
-            this.refreshButton = document.querySelector('#refresh-btn');
-            this.countElement = document.querySelector('#count');
-            this.topButton = document.querySelector('.top-button');
-            this.modal = document.querySelector('.image-modal');
-            this.modalImg = document.querySelector('.modal-content img');
-            this.closeModal = document.querySelector('.close-modal');
-            this.toastNotification = document.querySelector('.toast-notification');
-            
-            this.imageUrls = [];
-            this.displayedImages = new Set();
-            this.isLoading = false;
-            this.batchSize = 16;
-            this.hasMoreImages = true;
-            this.loadDelay = 100; // 載入延遲，用於動畫效果
+        this.imageGrid = document.querySelector('.pinterest-grid');
+        this.loadingSpinner = document.querySelector('.loading-spinner');
+        this.refreshButton = document.querySelector('#refresh-btn');
+        this.countElement = document.querySelector('#count');
+        this.topButton = document.querySelector('.top-button');
+        this.modal = document.querySelector('.image-modal');
+        this.modalImg = document.querySelector('.modal-content img');
+        this.closeModal = document.querySelector('.close-modal');
+        this.toastNotification = document.querySelector('.toast-notification');
+        
+        this.imageUrls = [];
+        this.displayedImages = new Set();
+        this.isLoading = false;
+        this.batchSize = 16;
+        this.hasMoreImages = true;
+        this.loadDelay = 100;
+        this.columns = [];
+        this.columnCount = this.getColumnCount();
 
-            this.loadCSV().then(() => {
-                this.initialize();
-            });
-            this.columns = [];
-            this.columnCount = this.getColumnCount();
+        // 先載入 CSV，然後再初始化其他功能
+        this.loadCSV().then(() => {
             this.initializeColumns();
-            
-            // 監聽視窗大小變化
-            window.addEventListener('resize', _.debounce(() => {
-                const newColumnCount = this.getColumnCount();
-                if (newColumnCount !== this.columnCount) {
-                    this.columnCount = newColumnCount;
-                    this.reflow();
-                }
-            }, 250));
-        }
+            this.initialize();
+        });
+    }
 
         initializeColumns() {
             this.imageGrid.innerHTML = '';
@@ -526,13 +518,17 @@
                 return;
             }
 
-            for (let i = 0; i < newImages.length; i++) {
-                const url = newImages[i];
-                this.displayedImages.add(url);
-                const imageElement = this.createImageElement(url);
-                const columnIndex = this.displayedImages.size % this.columnCount;
-                this.columns[columnIndex].appendChild(imageElement);
-            }
+            const loadPromises = newImages.map((url, index) => {
+                return new Promise((resolve) => {
+                    this.displayedImages.add(url);
+                    const imageElement = this.createImageElement(url);
+                    const columnIndex = this.displayedImages.size % this.columnCount;
+                    this.columns[columnIndex].appendChild(imageElement);
+                    resolve();
+                });
+            });
+
+            await Promise.all(loadPromises);
 
             this.isLoading = false;
             this.loadingSpinner.style.display = this.hasMoreImages ? 'block' : 'none';
@@ -552,22 +548,32 @@
         }
 
         setupRefreshButton() {
-            this.refreshButton.addEventListener('click', () => {
-                this.refreshButton.disabled = true;
-                this.refreshButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 重新載入中...';
-                
-                this.displayedImages.clear();
-                this.imageGrid.innerHTML = '';
-                this.hasMoreImages = true;
-                
-                setTimeout(() => {
-                    this.loadImages();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    this.refreshButton.disabled = false;
-                    this.refreshButton.innerHTML = '<i class="fas fa-sync-alt"></i> 重新產生圖片';
-                }, 500);
-            });
-        }
+        this.refreshButton.addEventListener('click', async () => {
+            if (this.isLoading) return; // 防止重複點擊
+            
+            this.refreshButton.disabled = true;
+            this.isLoading = true;
+            this.refreshButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 重新載入中...';
+            
+            // 清空現有內容
+            this.displayedImages.clear();
+            this.initializeColumns(); // 重新初始化列
+            this.hasMoreImages = true;
+            
+            try {
+                // 重新載入圖片
+                await this.loadImages();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                console.error('重新載入圖片時發生錯誤:', error);
+                this.showError('重新載入圖片失敗，請稍後再試');
+            } finally {
+                this.isLoading = false;
+                this.refreshButton.disabled = false;
+                this.refreshButton.innerHTML = '<i class="fas fa-sync-alt"></i> 重新產生圖片';
+            }
+        });
+    }
 
         setupScrollToTop() {
             window.addEventListener('scroll', () => {
