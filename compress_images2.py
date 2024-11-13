@@ -11,10 +11,9 @@ load_dotenv()
 
 print_lock = threading.Lock()
 
-def compress_image(image_path, dest_folder, max_size_kb, target_quality=90):
+def compress_image(image_path, img_tmp_folder, dest_folder, max_size_kb, target_quality=90):
     """ 反覆壓縮圖片直到大小小於 max_size_kb """
-    base_name = os.path.basename(image_path)
-    webp_image_path = os.path.join(dest_folder, base_name.replace('.jpg', '.webp'))
+    webp_image_path = image_path.replace(img_tmp_folder, dest_folder).replace('.jpg', '.webp')
     
     # 如果已經有符合條件的 WebP 文件，則跳過
     if os.path.exists(webp_image_path):
@@ -62,7 +61,7 @@ def compress_all_images(img_tmp_folder, img_folder, max_size_kb):
 
     # 使用 ThreadPoolExecutor 並行處理圖片
     with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(compress_image, image_path, img_folder, max_size_kb) for image_path in image_paths]
+        futures = [executor.submit(compress_image, image_path, img_tmp_folder, img_folder, max_size_kb) for image_path in image_paths]
         for future in tqdm(futures, desc="壓縮圖片中"):
             compressed_images.append(future.result())
 
@@ -81,10 +80,15 @@ def main():
 
     max_size_kb = args.max_size_kb
 
-    # 確保目的資料夾存在
-    for folder in [img_tmp_folder, img_folder]:
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+    # 確保目的資料夾存在並複製資料夾結構
+    for root, dirs, files in os.walk(img_tmp_folder):
+        # 計算相對路徑
+        relative_path = os.path.relpath(root, img_tmp_folder)
+        target_dir = os.path.join(img_folder, relative_path)
+        
+        # 確保目標資料夾存在
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
     
     # 壓縮圖片
     compressed_files = compress_all_images(img_tmp_folder, img_folder, max_size_kb)

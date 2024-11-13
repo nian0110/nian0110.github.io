@@ -202,50 +202,25 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background-color: var(--primary-color);
-            color: white;
-            width: 50px;
-            height: 50px;
+            background: rgba(255,255,255,0.9);
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: none;
             align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             z-index: 1000;
             border: none;
             box-shadow: var(--card-shadow);
+            color: #666;
         }
 
         .top-button:hover {
-            background-color: var(--hover-color);
-            transform: translateY(-3px);
-        }
-
-        .image-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        /* 修改 modal 內容的最大尺寸 */
-        .modal-content {
-            max-width: 90%;
-            max-height: 90vh;
-            position: relative;
-        }
-
-        .modal-content img {
-            max-width: 100%;
-            max-height: 90vh;
-            object-fit: contain;
+            background: #fff;
+            transform: scale(1.1);
+            box-shadow: var(--card-hover-shadow);
         }
 
         .close-modal {
@@ -319,13 +294,6 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <div class="image-modal">
-        <div class="modal-content">
-            <button class="close-modal">&times;</button>
-            <img src="" alt="放大圖片">
-        </div>
-    </div>
-
     <div class="toast-notification"></div>
 
     <!-- Bootstrap JS -->
@@ -336,31 +304,27 @@
     <script>
     class ImageGallery {
         constructor() {
-        this.imageGrid = document.querySelector('.pinterest-grid');
-        this.loadingSpinner = document.querySelector('.loading-spinner');
-        this.refreshButton = document.querySelector('#refresh-btn');
-        this.countElement = document.querySelector('#count');
-        this.topButton = document.querySelector('.top-button');
-        this.modal = document.querySelector('.image-modal');
-        this.modalImg = document.querySelector('.modal-content img');
-        this.closeModal = document.querySelector('.close-modal');
-        this.toastNotification = document.querySelector('.toast-notification');
-        
-        this.imageUrls = [];
-        this.displayedImages = new Set();
-        this.isLoading = false;
-        this.batchSize = 16;
-        this.hasMoreImages = true;
-        this.loadDelay = 100;
-        this.columns = [];
-        this.columnCount = this.getColumnCount();
+            this.imageGrid = document.querySelector('.pinterest-grid');
+            this.loadingSpinner = document.querySelector('.loading-spinner');
+            this.refreshButton = document.querySelector('#refresh-btn');
+            this.countElement = document.querySelector('#count');
+            this.topButton = document.querySelector('.top-button');
+            // 移除 modal 相關的屬性初始化
+            
+            this.imageUrls = [];
+            this.displayedImages = new Set();
+            this.isLoading = false;
+            this.batchSize = 16;
+            this.hasMoreImages = true;
+            this.loadDelay = 100;
+            this.columns = [];
+            this.columnCount = this.getColumnCount();
 
-        // 先載入 CSV，然後再初始化其他功能
-        this.loadCSV().then(() => {
-            this.initializeColumns();
-            this.initialize();
-        });
-    }
+            this.loadCSV().then(() => {
+                this.initializeColumns();
+                this.initialize();
+            });
+        }
 
         initializeColumns() {
             this.imageGrid.innerHTML = '';
@@ -417,7 +381,7 @@
             this.setupRefreshButton();
             this.setupInfiniteScroll();
             this.setupScrollToTop();
-            this.setupModal();
+            // 移除 setupModal 的調用
             this.loadImages();
             this.updateCount();
         }
@@ -437,65 +401,42 @@
             return _.sampleSize(availableImages, Math.min(count, availableImages.length));
         }
 
-        createImageElement(url) {
-            const item = document.createElement('div');
-                item.className = 'pinterest-item loading';
-                
-                const wrapper = document.createElement('div');
-                wrapper.style.position = 'relative';
-                wrapper.style.paddingBottom = '75%';
-                
-                const img = document.createElement('img');
-                img.style.position = 'absolute';
-                img.style.top = '0';
-                img.style.left = '0';
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                
-                // 新增：整個 item 可點擊放大
-                item.addEventListener('click', (e) => {
-                    // 如果點擊的不是下載按鈕，就放大圖片
-                    if (!e.target.closest('.image-actions')) {
-                        this.openModal(url);
-                    }
-                });
-                
-                const tempImage = new Image();
-                tempImage.onload = () => {
-                    const aspectRatio = (tempImage.height / tempImage.width * 100) + '%';
-                    wrapper.style.paddingBottom = aspectRatio;
-                    img.src = url;
-                    item.classList.remove('loading');
-                };
-                tempImage.src = url;
-                
-                wrapper.appendChild(img);
-                item.appendChild(wrapper);
-
-                const overlay = document.createElement('div');
-                overlay.className = 'image-overlay';
-                
-                const actions = document.createElement('div');
-                actions.className = 'image-actions';
-                
-                // 移除放大按鈕，因為整個圖片都可以點擊放大
-                const downloadButton = document.createElement('button');
-                downloadButton.innerHTML = '<i class="fas fa-download"></i>';
-                downloadButton.title = '下載圖片';
-                downloadButton.onclick = (e) => {
-                    e.stopPropagation(); // 防止觸發父元素的點擊事件
-                    this.downloadImage(url);
-                };
-
-                actions.appendChild(downloadButton);
-                overlay.appendChild(actions);
-                
-                item.appendChild(img);
-                item.appendChild(overlay);
-                
-                return item;
-        }
+    createImageElement(url) {
+        const item = document.createElement('div');
+        item.className = 'pinterest-item loading';
+        
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.paddingBottom = '75%';
+        
+        const img = document.createElement('img');
+        img.style.position = 'absolute';
+        img.style.top = '0';
+        img.style.left = '0';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        
+        // 修改點擊事件為開啟新分頁
+        item.addEventListener('click', () => {
+            window.open(url, '_blank');
+        });
+        
+        const tempImage = new Image();
+        tempImage.onload = () => {
+            const aspectRatio = (tempImage.height / tempImage.width * 100) + '%';
+            wrapper.style.paddingBottom = aspectRatio;
+            img.src = url;
+            item.classList.remove('loading');
+        };
+        tempImage.src = url;
+        
+        wrapper.appendChild(img);
+        item.appendChild(wrapper);
+        item.appendChild(img);
+        
+        return item;
+    }
 
         async loadImages() {
             if (this.isLoading || !this.hasMoreImages) return;
