@@ -1,0 +1,121 @@
+.hero-section {
+    background-color: #f8f9fa;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.gallery-container {
+    padding: 0 2rem;
+}
+
+.gallery-grid {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+/* 小螢幕時一排2個 */
+@media (max-width: 576px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* 中等螢幕時一排3個 */
+@media (min-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 大螢幕時一排4個 */
+@media (min-width: 1200px) {
+    .gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.gallery-item {
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    transition: background-color 0.2s;
+}
+
+.gallery-image-container {
+    position: relative;
+    padding-top: 30%;
+    padding-bottom: 60%;
+    width: 100%;
+    background-color: #f5f5f5;
+}
+
+.gallery-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-content {
+    padding: 1rem;
+}
+
+.gallery-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.gallery-description {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.gallery-button {
+    background-color: #f5f5f5;
+    border: none;
+    color: #333;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.gallery-button:hover {
+    background-color: #e0e0e0;
+    text-decoration: none;
+    color: #333;
+}
+
+/* 調整小螢幕時的間距和字體大小 */
+@media (max-width: 576px) {
+    .gallery-container {
+        padding: 0 1rem;
+    }
+    
+    .gallery-content {
+        padding: 0.75rem;
+    }
+    
+    .gallery-title {
+        font-size: 0.9rem;
+    }
+    
+    .gallery-description {
+        font-size: 0.8rem;
+    }
+    
+    .gallery-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}

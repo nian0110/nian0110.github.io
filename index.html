@@ -1,67 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-NSNMPJGPLH"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NSNMPJGPLH"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-	gtag('config', 'G-1B3WJL96J4');
-	</script>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>LingOrm隨機圖片</title>
-	<!-- Bootstrap CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="main.css">
-	<link rel="icon" href="favicon/favicon.ico">
+    gtag('config', 'G-1B3WJL96J4');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LingOrm隨機圖片</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="icon" href="favicon/favicon.ico">
 </head>
 <body>
 
 <!-- Navbar with dark background -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	<div class="container-fluid">
-		<a class="navbar-brand" href="index.html">LingOrm隨機圖片</a>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarNav">
-			<ul class="navbar-nav ms-auto">
-				<li class="nav-item">
-					<a class="nav-link active" aria-current="page" href="index.html">首頁</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="about.html">關於我</a>
-				</li>
-			</ul>
-		</div>
-	</div>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">LingOrm隨機圖片</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="index.html">首頁</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">關於我</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
 
-<div class="container">
-	<div class="inner-div">
-		<!-- Bootstrap buttons with custom classes -->
-		<button id="previous-button" class="btn btn-secondary btn mb-3" style="display:none;">上一張</button>
-		<button id="refresh-button" class="btn btn-warning btn mb-3" style="display:none;">重新整理</button>
-		<button id="button" class="btn btn-primary btn mb-3">隨機顯示圖片</button>
-	</div>
-
-	<p id="count"></p>
-	<div id="info"></div>
-	<img id="image" src="" alt="random image">
-
+<div class="hero-section">
+    <div class="container">
+        <h1 class="display-4 mb-3">LingOrm隨機圖片</h1>
+    </div>
 </div>
 
+<div class="gallery-container">
+	<div class="gallery-grid">
+		<!-- Lingling -->
+		<div class="gallery-item">
+			<div class="gallery-image-container">
+				<img src="https://pbs.twimg.com/profile_images/1766407429800288256/DAde6MgD_400x400.jpg" alt="Lingling" class="gallery-image" id="image-ling">
+			</div>
+			<div class="gallery-content">
+				<h3 class="gallery-title">Linglingkwong</h3>
+				<p class="gallery-description">圖片來源：LingLing(ig, twitter, weibo)</p>
+				<a href="ling.html" class="gallery-button">查看圖片</a>
+			</div>
+		</div>
 
-<!-- Bootstrap JS (with Popper) -->
+		<!-- Orm -->
+		<div class="gallery-item">
+			<div class="gallery-image-container">
+				<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbUkn4GQmqcxq3UZn1hd-jaPUBwuO3SGQhsA&s" alt="Orm" class="gallery-image" id="image-orm">
+			</div>
+			<div class="gallery-content">
+				<h3 class="gallery-title">Orm Kornnaphat</h3>
+				<p class="gallery-description">圖片來源：Orm(ig, twitter, weibo)</p>
+				<a href="orm.html" class="gallery-button">查看圖片</a>
+			</div>
+		</div>
+
+		<!-- All -->
+		<div class="gallery-item">
+			<div class="gallery-image-container">
+				<img src="./images/mix/GrabTH_1845121724897165764_2024-10-12 15-17_1.webp" alt="All Photos" class="gallery-image" id="image-lingorm">
+			</div>
+			<div class="gallery-content">
+				<h3 class="gallery-title">All</h3>
+				<p class="gallery-description">圖片來源：各站姐(twitter, weibo)</p>
+				<a href="all.html" class="gallery-button">查看圖片</a>
+			</div>
+		</div>
+
+		<!-- The Secret Of Us -->
+		<div class="gallery-item">
+			<div class="gallery-image-container">
+				<img src="https://upload.wikimedia.org/wikipedia/zh/3/31/%E0%B9%83%E0%B8%88%E0%B8%8B%E0%B9%88%E0%B8%AD%E0%B8%99%E0%B8%A3%E0%B8%B1%E0%B8%81_2.jpeg" alt="The Secret Of Us" class="gallery-image" id="image-tsou">
+			</div>
+			<div class="gallery-content">
+				<h3 class="gallery-title">The Secret Of Us</h3>
+				<p class="gallery-description">圖片來源：SOU_Ch3Official(twitter)</p>
+				<a href="all.html" class="gallery-button">查看圖片</a>
+			</div>
+		</div>
+
+		<!-- Only You -->
+		<div class="gallery-item">
+			<div class="gallery-image-container">
+				<img src="https://upload.wikimedia.org/wikipedia/zh/a/a8/%E0%B9%80%E0%B8%9E%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%80%E0%B8%98%E0%B8%AD.jpg" alt="Only You" class="gallery-image" id="image-onlyyou">
+			</div>
+			<div class="gallery-content">
+				<h3 class="gallery-title">Only You</h3>
+				<p class="gallery-description">圖片來源：OnlyYouSeriesTH(twitter)</p>
+				<a href="all.html" class="gallery-button">查看圖片</a>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-<script src="main.js"></script>
-
 </body>
-
 </html>
