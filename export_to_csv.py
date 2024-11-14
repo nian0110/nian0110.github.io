@@ -1,6 +1,10 @@
 import os
 import pandas as pd
 import argparse
+from dotenv import load_dotenv
+
+# 加載 .env 文件
+load_dotenv()
 
 def str_to_bool(v):
     if v.lower() in ('true', 't', '1'):
@@ -45,20 +49,24 @@ def merge_notion_df(df):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='指定是否合併其他欄位')
     parser.add_argument('merge', type=str_to_bool, help='True/False')
+    parser.add_argument('csv_img_folder', type=str, help='csv_img_folder')
+    parser.add_argument('csv_filename', type=str, help='csv_filename')
+    
     args = parser.parse_args()
     merge = args.merge
+    csv_img_folder = args.csv_img_folder
+    csv_filename = args.csv_filename
     print(f'merge: {merge}')
-
-    dest_folder = './images'
-    output_file = './images.csv'
+    print(f'csv_img_folder: {csv_img_folder}')
+    print(f'csv_filename: {csv_filename}\n')
     
     # 獲取目的資料夾中的所有檔案
-    tmp_df = get_all_files(dest_folder)
+    tmp_df = get_all_files(csv_img_folder)
     if merge:
         df = merge_notion_df(tmp_df)
     else:
         df = tmp_df
 
-    df.to_csv(output_file, index=False)
+    df.to_csv(csv_filename, index=False)
     
-    print(f"已將 {tmp_df.shape[0]} 個檔案匯出到 {output_file}")
+    print(f"已將 {tmp_df.shape[0]} 個檔案匯出到 {csv_filename}")
