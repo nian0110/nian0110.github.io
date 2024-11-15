@@ -14,13 +14,18 @@ def str_to_bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
-def get_all_files(directory):
-    """ 獲取指定資料夾中所有檔案的完整路徑 """
-    all_files = [file for file in os.listdir(directory) if os.path.isfile(os.path.join(directory, file))]
+def find_jpg_files(root_folder):
+    file_list = []
 
-    # 將檔案名稱寫入 CSV
-    df = pd.DataFrame(all_files, columns=['filename'])
-    df['full_path'] =  df['filename'].apply(lambda x:os.path.join(directory, x))
+    # 遍历目录
+    for dirpath, _, filenames in os.walk(root_folder):
+        for filename in filenames:
+            if filename.lower().endswith('.webp'):
+                full_path = os.path.join(dirpath, filename)
+                file_list.append({'filename': filename, 'full_path': full_path})
+
+    # 转换为 DataFrame
+    df = pd.DataFrame(file_list, columns=['filename', 'full_path'])
     df['full_path'] = df['full_path'].apply(lambda x: x.replace('\\', '/'))
 
     return df
@@ -61,7 +66,7 @@ if __name__ == "__main__":
     print(f'csv_filename: {csv_filename}\n')
     
     # 獲取目的資料夾中的所有檔案
-    tmp_df = get_all_files(csv_img_folder)
+    tmp_df = find_jpg_files(csv_img_folder)
     if merge:
         df = merge_notion_df(tmp_df)
     else:

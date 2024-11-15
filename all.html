@@ -127,7 +127,7 @@
 
         async loadCSV() {
             try {
-                const response = await fetch('./data/images_mix.csv');
+                const response = await fetch('./data/images_活動.csv');
                 const data = await response.text();
                 let lines = data.split('\n').filter(line => line.trim() !== "");
                 this.imageUrls = lines.slice(1).map(line => {
