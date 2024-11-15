@@ -27,6 +27,10 @@ def find_jpg_files(root_folder):
     # 转换为 DataFrame
     df = pd.DataFrame(file_list, columns=['filename', 'full_path'])
     df['full_path'] = df['full_path'].apply(lambda x: x.replace('\\', '/'))
+    duplicated_count = df[df.duplicated(subset=['filename'])].shape[0]
+    print(f'dup count：{df.shape[0]} - {duplicated_count} = {df.shape[0]-duplicated_count}')
+    df = df.drop_duplicates('filename').reset_index(drop=True)
+    print(f'df count：{df.shape[0]}')
 
     return df
 
