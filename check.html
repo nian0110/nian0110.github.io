@@ -215,7 +215,7 @@ class ImageGallery {
 
     async loadCSV() {
         try {
-            const response = await fetch('./data/test/Convallaria_LO_1.csv');
+            const response = await fetch('./data/test/JungsJinns_6.csv');
             const data = await response.text();
             let lines = data.split('\n').filter(line => line.trim() !== "");
             this.imageUrls = lines.slice(1).map(line => {
