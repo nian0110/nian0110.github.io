@@ -12,4 +12,5 @@ python ./script/export_to_csv.py false ./images/ormkornnaphat ./data/images_orm.
 python ./script/export_to_csv.py false ./images/OnlyYouSeriesTH ./data/images_onlyyou.csv
 python ./script/export_to_csv.py false ./images/SOU_Ch3Official ./data/images_tsou.csv
 python ./script/export_to_csv.py false ./images/活動 ./data/images_活動.csv
+python ./script/export_to_csv.py false ./images/magazine ./data/images_magazine.csv
 ```
