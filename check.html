@@ -17,6 +17,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 	<link rel="stylesheet" href="./css/page_check.css">
+    <link rel="icon" href="favicon/favicon.ico">
     <style>
         .pinterest-item.selected::after {
             content: '✓';
@@ -294,13 +295,13 @@ class ImageGallery {
     }
 
     getRandomImages(count) {
-        const availableImages = this.imageUrls.filter(url => !this.displayedImages.has(url));
-        if (availableImages.length === 0) {
-            this.hasMoreImages = false;
-            return [];
-        }
-        return _.sampleSize(availableImages, Math.min(count, availableImages.length));
+    const availableImages = this.imageUrls.filter(url => !this.displayedImages.has(url));
+    if (availableImages.length === 0) {
+        this.hasMoreImages = false;
+        return [];
     }
+    return availableImages.slice(0, Math.min(count, availableImages.length));
+}
 
     async loadImages() {
         if (this.isLoading || !this.hasMoreImages) return;
