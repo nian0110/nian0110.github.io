@@ -216,8 +216,8 @@ class ImageGallery {
 
     async loadCSV() {
         try {
-            const response = await fetch('./data/images_活動.csv');
-            // const response = await fetch('./data/test/20240323_三台54週年慶_1.csv');
+            // const response = await fetch('./data/images_活動.csv');
+            const response = await fetch('./data/test/202411_1.csv');
             const data = await response.text();
             let lines = data.split('\n').filter(line => line.trim() !== "");
             this.imageUrls = lines.slice(1).map(line => {
