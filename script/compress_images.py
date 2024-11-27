@@ -13,7 +13,7 @@ print_lock = threading.Lock()
 
 def compress_image(image_path, img_tmp_folder, dest_folder, max_size_kb, target_quality=90):
     """ 反覆壓縮圖片直到大小小於 max_size_kb """
-    webp_image_path = image_path.replace(img_tmp_folder, dest_folder).replace('.jpg', '.webp')
+    webp_image_path = image_path.replace(img_tmp_folder, dest_folder).replace('.jpg', '.webp').replace('.JPG', '.webp')
     
     # 如果已經有符合條件的 WebP 文件，則跳過
     if os.path.exists(webp_image_path):
