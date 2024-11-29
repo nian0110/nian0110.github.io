@@ -3,7 +3,7 @@
 python ./script/copy_random_images.py all
 ```
 ```
-python ./script/compress_images.py 200 ./image_process/tmp ./image_process/compress
+python ./script/compress_images.py 150 ./image_process/tmp ./image_process/compress
 ```
 ```
 python ./script/export_to_csv.py false
