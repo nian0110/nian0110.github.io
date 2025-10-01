@@ -7,3 +7,4 @@ photo_data.xlsx
 /data/test/*
 *.cpython-39.pyc
 files_to_preserve.csv
+/bot/image_process/*

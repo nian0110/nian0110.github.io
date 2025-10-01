@@ -4,6 +4,7 @@ python ./script/copy_random_images.py all
 ```
 ```
 python ./script/compress_images.py 150 ./image_process/tmp ./image_process/compress
+python ./script/compress_images.py 150 ./bot/image_process/tmp ./bot/image_process/compress
 ```
 ```
 python ./script/export_to_csv.py false
@@ -13,4 +14,5 @@ python ./script/export_to_csv.py false ./images/OnlyYouSeriesTH ./data/images_on
 python ./script/export_to_csv.py false ./images/SOU_Ch3Official ./data/images_tsou.csv
 python ./script/export_to_csv.py false ./images/活動 ./data/images_活動.csv
 python ./script/export_to_csv.py false ./images/magazine ./data/images_magazine.csv
+python ./script/export_to_csv.py false ./bot/images ./bot/data/images.csv
 ```
